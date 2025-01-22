@@ -1,0 +1,1213 @@
+
+<!DOCTYPE html><html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>登录</title>
+    <script type="text/javascript" src="http://cdn.tx.xdogv.cn:8881/ttxindaoyou/files/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="http://cdn.tx.xdogv.cn:8881/ttxindaoyou/files/js/rem.js"></script>
+    <script type="text/javascript" src="http://cdn.tx.xdogv.cn:8881/ttxindaoyou/files/js/vue_z.js"></script>
+    <script type="text/javascript" src="http://cdn.tx.xdogv.cn:8881/ttxindaoyou/files/js/vue-resource.min.js"></script>
+
+    <script type="text/javascript" src="http://cdn.tx.xdogv.cn:8881/ttxindaoyou/files/js/vconsole.min.js?v=12"></script>
+    <script type="text/javascript">
+        document.write('<script type="text/javascript" src="/js/config.js"> <\/script>');
+        document.write('<script type="text/javascript" src="http://cdn.tx.xdogv.cn:8881/ttxindaoyou/js/load.js"> <\/script>');</script><script>
+
+        var returnUrl = DynLoading.getUrlParam('return_url');
+        var t = DynLoading.getUrlParam('t');
+        var obj = null;
+        if(DynLoading.isWeiXin()){
+            var code = DynLoading.getUrlParam("code");
+            if(code){
+                obj = DynLoading.wxlog(BaseUrl + '/site1/wxlg?code=' + code);
+                if(obj.result != 0) {
+                    obj = DynLoading.hall(BaseUrl + '/site1/wlogin');
+                    console.log(obj);
+                    if(obj.result != 0) {
+                        var acode = obj.data.acode;
+                        var rurl = 'http://' + window.location.host + '/site/login.html';
+                        //window.location.href = '/site/wxredd.html?rurl= ' + rurl + '&acode=' + acode;
+                    }
+                }else{
+                    window.localStorage.removeItem('wwid');
+                    window.localStorage.setItem('wwid', obj.data.wwid);
+                    var _return_url= returnUrl;
+                    var  _url;
+                    if(_return_url && _return_url.indexOf('?')>0){
+                        _url = _return_url +'&code=' + code;
+                        window.location.replace(_url);
+                    }else{
+                        window.location.replace('/index.html?code='+ code);
+                    }
+                }
+            }
+        }
+        var apiUrl = BaseUrl + '/userapi/';
+        var apiUrl2 = BaseUrl + '/site1/';
+
+    </script><style>body {
+				font-family: 'Helvetica Neue', Helvetica, 'Hiragino Sans GB', 'Microsoft YaHei', 微软雅黑, Arial, sans-serif;
+				cursor: default;
+				margin: 0 auto;
+				background-color: #f0f1f5;
+				height: 100%;
+				max-width: 768px;
+				color: #000;
+				font-size: 0.32rem;
+				overflow-x: hidden;
+				width: 100%;
+			}
+
+			html {
+				height: 100%;
+			}
+
+			input {
+				margin: 0;
+				padding: 0;
+				border: 0;
+			}
+
+			a {
+				text-decoration: none;
+				color: #848484;
+			}
+
+			ul,
+			li,
+			h1,
+			h2,
+			dl,
+			dt,
+			dd,
+			a,
+			div,
+			p,
+			dd,
+			dt,
+			dl {
+				margin: 0px;
+				padding: 0px;
+			}
+
+			a,
+			a:visited {
+				text-decoration: none;
+			}
+
+			img {
+				border: 0;
+			}
+
+			li {
+				list-style-type: none;
+			}
+
+			.f-cb:after {
+				display: block;
+				visibility: hidden;
+				clear: both;
+				height: 0;
+				overflow: hidden;
+				content: '.';
+			}
+
+			#app {
+				position: relative;
+				width: 100%;
+				height: 100%;
+				overflow-x: hidden;
+				/* background-image: url("../files/images/gameicon/icon_jia31.png"); */
+				/* background-size: 100% 100%; */
+			}
+
+			.phoneFrame,.userFrame,.setPassword,.creatUser,.weixinFrame,.mailFrame,.creatMailuser {
+				position: absolute;
+				z-index: 99;
+				width: 90%;
+				min-height: 300px;
+				top: 50%;
+				left: 50%;
+				-webkit-transform: translate(-50%, -50%);
+				transform: translate(-50%, -50%);
+				background-color: #fff;
+				text-align: center;
+				border-radius: 8px;
+				padding: 0.8rem 0 0.8rem 0;
+			}
+			.bottom-box{
+				width: 100%;
+				text-align:center;
+				display: flex;
+				justify-content: center;
+				position: absolute;
+				bottom: 10px;
+				left: 0;
+			}
+
+			.phoneFrame,.userFrame, .creatUser,.setPassword,.mailFrame,.creatMailuser{
+				opacity: 0;
+				left: -50%;
+			}
+
+			.weixinFrame{
+				opacity: 1;
+				left: 50%;
+			}
+			
+			.closeBtn {
+				position: absolute;
+				z-index: 99;
+				width: 0.8rem;
+				top: -3%;
+				left: 92%;
+				display: none;
+			}
+
+			.title {
+				font-size: 0.4rem;
+				padding-bottom: 0.5rem;
+				word-wrap: break-word;
+				word-break: break-all;
+				color: #000;
+				background-color: white;
+			}
+			.title .sel-title{
+				color: rgb(64, 112, 251);
+				text-decoration: underline;
+			}
+			.input input {
+				line-height: normal;
+				padding: 10px 10px;
+				height: 1rem;
+				border-style: solid;
+				border-width: 1px;
+				border-radius: 0.1rem;
+				border-color: rgb(240, 240, 240);
+				font-size: 0.3rem;
+				-webkit-appearance: none;
+				background-color: rgb(240, 240, 240);
+				box-sizing: border-box;
+				width: 100%;
+				vertical-align: middle;
+			}
+
+			.item {
+				margin: 0 auto 0.5rem auto;
+				width: 86%;
+			}
+
+			.item .label {
+				float: left;
+				color: #000;
+				width: 30%;
+				font-size: 0.32rem;
+				line-height: 1rem;
+			}
+
+			.item .input {
+				float: right;
+				width: 68%;
+			}
+
+			.enterBtn {
+				width: 90%;
+				line-height: 1.2rem;
+				border-radius: 0.1rem;
+				font-size: 0.36rem;
+				background-color: rgb(64, 112, 251);
+				color: #fff;
+				margin: 0.8rem auto 0 auto;
+			}
+			.bg-gray{
+				background-color: rgb(231, 234, 233);
+				color: rgb(64, 112, 251);
+			}
+			.phoneShowBtn,.setPasswordShowBtn {
+				/* width: 48%; */
+				/* float: right; */
+				text-align: right;
+				font-size: 0.36rem;
+				color: rgb(64, 112, 251);
+				text-decoration: underline;
+			}
+			.mailBtn{
+				margin: 0 auto;
+				text-align: center;
+				font-size: 0.36rem;
+				color: rgb(64, 112, 251);
+				text-decoration: underline;
+			}
+			.setPasswordShowBtn {
+				/* float: left; */
+				text-align: left;
+			}
+
+			.backBtn {
+				width: 50%;
+				position: absolute;
+				left: 50%;
+				bottom: 5%;
+				margin-left: -25%;
+				opacity: 0;
+				text-align: center;
+				color: #fff;
+				font-size: 0.34rem;
+				line-height: 1.2rem;
+				border-radius: 0.1rem;
+				background-color: #6d7dd4;
+			}
+
+			.codeBtn {
+				width: 30%;
+				float: right;
+				background-color: rgb(64, 112, 251);
+				font-size: 0.28rem;
+				border-radius: 0.1rem;
+				line-height: 1rem;
+				color: white;
+			}
+
+			.codeBtn.cur {
+				background: #ccc;
+			}
+
+			.clearShowBtn {
+				margin-top: 2vh;
+				margin-right: 6vw;
+				width: 48%;
+				float: right;
+				text-align: right;
+				font-size: 0.36rem;
+				color: rgb(64, 112, 251);
+				text-decoration: underline;
+			}
+			.weixin-logo{
+				width: 100%;
+				height: 130px;
+				/* justify-content: center; */
+			}
+			.weixin-logo .wx-logo{
+				width: 150px;
+				height: 110px;
+				margin: 0 auto;
+			}
+			.floatleft{
+				float: left;
+			}
+			.flexbetw{
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}</style></head><body><div id="app"><div class="userFrame"><img src="http://cdn.tx.xdogv.cn:8881/files/images/activity/common_close.png" class="closeBtn"><div class="title">账号登录</div><div class="item f-cb"><div class="label">账&emsp;&emsp;号：</div><div class="input"><input placeholder="输入手机号或账号" v-model="account"></div></div><div class="item f-cb"><div class="label">密&emsp;&emsp;码：</div><div class="input"><input placeholder="输入6-18位英文或数字密钥" type="password" v-model="passWord"></div></div><div style="width:80%;margin:0 auto;height: 36px;" class="f-cb flexbetw"><div class="setPasswordShowBtn" @click="weixinShowBtn">微信登录</div><div class="mailBtn" @click="mailShowBtn">邮箱登录</div><div class="phoneShowBtn" @click="phoneShowBtn">手机登陆</div></div><div v-if="isShowTip" style="color: red;">{{tipText}}</div><div class="enterBtn" @click="enterBtn">进入游戏</div><div class="bottom-box"><span class="setPasswordShowBtn" style="width: auto;" @click="setPasswordShowBtn">忘记密码</span> <span>&ensp;|&ensp;</span> <span class="phoneShowBtn" style="width: auto;" @click="creatUserShowBtn">用户注册</span> <span>&ensp;|&ensp;</span> <span class="phoneShowBtn" style="width: auto;" @click="clearLogin">清理缓存</span></div></div><div class="mailFrame"><img src="http://cdn.tx.xdogv.cn:8881/files/images/activity/common_close.png" class="closeBtn"><div class="title">邮箱登录</div><div class="item f-cb"><div class="label">电子邮箱：</div><div class="input"><input placeholder="输入电子邮箱" v-model="mail"></div></div><div class="item f-cb"><div class="label">密&emsp;&emsp;码：</div><div class="input"><input placeholder="输入6-18位英文或数字密钥" type="password" v-model="mailPssw"></div></div><div style="width:80%;margin:0 auto;height: 36px;" class="f-cb flexbetw"><div class="setPasswordShowBtn" @click="weixinShowBtn">微信登录</div><div class="mailBtn" @click="userShowBtn">账号登录</div><div class="phoneShowBtn" @click="phoneShowBtn">手机登陆</div></div><div v-if="isShowTip" style="color: red;">{{tipText}}</div><div class="enterBtn" @click='enterBtn("mail")'>进入游戏</div><div class="bottom-box"><span class="setPasswordShowBtn" style="width: auto;" @click="setPasswordShowBtn">忘记密码</span> <span>&ensp;|&ensp;</span> <span class="phoneShowBtn" style="width: auto;" @click="creatUserShowBtn">用户注册</span> <span>&ensp;|&ensp;</span> <span class="phoneShowBtn" style="width: auto;" @click="clearLogin">清理缓存</span></div></div><div class="phoneFrame"><img src="http://cdn.tx.xdogv.cn:8881/files/images/activity/common_close.png" class="closeBtn"><div class="title">手机登录</div><div class="item f-cb"><div class="label">手&ensp;机&ensp;号：</div><div class="input"><input placeholder="输入11位手机号" v-model="phoneNum"></div></div><div class="item f-cb"><div class="input" style="float:left;"><input style="margin-right:10px;width: calc(100% - 10px);" placeholder="输入验证码" v-model="codeNum"></div><div class="codeBtn" v-show="show" @click="codeBtn(0)">发送验证码</div><div class="codeBtn cur" v-show="!show" class="count">{{count}} s</div></div><div style="width:80%;margin:0 auto;height: 36px;" class="f-cb flexbetw"><div class="setPasswordShowBtn" @click="weixinShowBtn">微信登录</div><div class="mailBtn" @click="mailShowBtn">邮箱登录</div><div class="phoneShowBtn" @click="userShowBtn">账号登录</div></div><div v-if="isShowTip" style="color: red;">{{tipText}}</div><div class="enterBtn" @click="enterBtn_phone">进入游戏</div><div class="bottom-box"><span class="setPasswordShowBtn" style="width: auto;" @click="setPasswordShowBtn">忘记密码</span> <span>&ensp;|&ensp;</span> <span class="phoneShowBtn" style="width: auto;" @click="creatUserShowBtn">用户注册</span> <span>&ensp;|&ensp;</span> <span class="phoneShowBtn" style="width: auto;" @click="clearLogin">清理缓存</span></div></div><div class="weixinFrame"><img src="http://cdn.tx.xdogv.cn:8881/files/images/activity/common_close.png" class="closeBtn"><div class="title">微信登录</div><div class="weixin-logo"><img src="../site/weixin.jpg" class="wx-logo"></div><div style="width:80%;margin:0 auto;height: 36px;" class="f-cb flexbetw"><div class="phoneShowBtn" @click="userShowBtn">账号登录</div><div class="mailBtn" @click="mailShowBtn">邮箱登录</div><div class="phoneShowBtn floatleft" @click="phoneShowBtn">手机登陆</div></div><div v-if="isShowTip" style="color: red;">{{tipText}}</div><div class="enterBtn" @click="enterWxBtn">微信授权</div><div class="bottom-box"><span class="phoneShowBtn" style="width: auto;" @click="creatUserShowBtn">用户注册</span> <span>&ensp;|&ensp;</span> <span class="phoneShowBtn" style="width: auto;" @click="clearLogin">清理缓存</span></div></div><div class="setPassword"><img src="http://cdn.tx.xdogv.cn:8881/files/images/activity/common_close.png" class="closeBtn"><div class="title">修改密码</div><div class="item f-cb"><div class="label">手&ensp;机&ensp;号：</div><div class="input"><input placeholder="输入11位手机号" type="password" v-model="phoneNum1"></div></div><div class="item f-cb"><div class="input" style="float:left;"><input style="margin-right:10px;width: calc(100% - 10px);" placeholder="输入验证码" v-model="codeNum1"></div><div class="codeBtn" v-show="show1" @click="codeBtn(1)">发送验证码</div><div class="codeBtn cur" v-show="!show1" class="count">{{count1}} s</div></div><div class="item f-cb"><div class="label">登录密码：</div><div class="input"><input placeholder="登录密码" type="password" v-model="passWord_phone1"></div></div><div class="item f-cb"><div class="label">再次确认：</div><div class="input"><input placeholder="再次确认" type="password" v-model="passWord_phone_en1"></div></div><div v-if="isShowTip" style="color: red;">{{tipText}}</div><div class="enterBtn" @click="enterBtn_phone1">确认修改</div><div class="enterBtn bg-gray" @click="backBtn">返回登陆</div></div><div class="creatUser"><img src="http://cdn.tx.xdogv.cn:8881/files/images/activity/common_close.png" class="closeBtn"><div class="title"><span :class="creatType == 'phone'?'sel-title':''" @click="creatType = 'phone'">手机号注册</span>&emsp;|&emsp; <span :class="creatType == 'mail'?'sel-title':''" @click="creatType = 'mail'">邮箱注册</span></div><div v-show="creatType == 'phone'"><div class="item f-cb"><div class="label">用&ensp;户&ensp;名：</div><div class="input"><input placeholder="输入用户名" v-model="account2"></div></div><div class="item f-cb"><div class="label">手&ensp;机&ensp;号：</div><div class="input"><input placeholder="输入11位手机号" v-model="phoneNum2"></div></div><div class="item f-cb"><div class="input" style="float:left;"><input style="margin-right:10px;width: calc(100% - 10px);" placeholder="输入验证码" v-model="codeNum2"></div><div class="codeBtn" v-show="show2" @click="codeBtn(2)">发送验证码</div><div class="codeBtn cur" v-show="!show2" class="count">{{count2}} s</div></div><div class="item f-cb"><div class="label">设置密码：</div><div class="input"><input placeholder="设置登录密码" type="password" v-model="passWord_phone2"></div></div><div class="item f-cb"><div class="label">密码确认：</div><div class="input"><input placeholder="确认登录密码" type="password" v-model="passWord_phone_en2"></div></div></div><div v-show="creatType == 'mail'"><div class="item f-cb"><div class="label">用&ensp;户&ensp;名：</div><div class="input"><input placeholder="输入用户名" v-model="account3"></div></div><div class="item f-cb"><div class="label">电子邮箱：</div><div class="input"><input placeholder="输入电子邮箱" v-model="mail3"></div></div><div class="item f-cb"><div class="input" style="float:left;"><input style="margin-right:10px;width: calc(100% - 10px);" placeholder="输入验证码" v-model="codeNum3"></div><div class="codeBtn" v-show="show3" @click="mailCodeBtn(3)">发送验证码</div><div class="codeBtn cur" v-show="!show3" class="count">{{count3}} s</div></div><div class="item f-cb"><div class="label">设置密码：</div><div class="input"><input placeholder="设置登录密码" type="password" v-model="passWord_phone3"></div></div><div class="item f-cb"><div class="label">密码确认：</div><div class="input"><input placeholder="确认登录密码" type="password" v-model="passWord_phone_en3"></div></div></div><div v-if="isShowTip" style="color: red;">{{tipText}}</div><div class="enterBtn" @click="enterBtn_phone2">注册</div><div class="enterBtn bg-gray" @click="backBtn">返回登陆</div></div></div><script>const httpOperation = {
+				OP_Login: 10010001,
+				OP_Logout: 10010002,
+				OP_SendSms: 10010003,
+				OP_smsLogin: 10010004,
+				OP_wxLogin: 10010005,
+				OP_register: 10010006,
+				OP_resetPassword: 10010007,
+				OP_mailRegister: 10010010,
+				OP_Index: 10020001,
+				Op_aCode: 10010009,
+			};
+			const reg = /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/
+			const regex = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,18}$/;
+			const emailReg = /^\w{3,}(\.\w+)*@[A-z0-9]+(\.[A-z]{2,5}){1,2}$/;
+			var app = new Vue({
+				el: '#app',
+				data: {
+					show: true,
+					count: '',
+					timer: null,
+					show1: true,
+					count1: '',
+					timer1: null,
+					show2: true,
+					count2: '',
+					timer2: null,
+					account: '',
+					passWord: '',
+					phoneNum: '',//手机登陆
+					codeNum: '',
+					passWord_phone: '',
+					passWord_phone_en: '',
+					phoneNum1: '',//修改密码
+					codeNum1: '',
+					passWord_phone1: '',
+					passWord_phone_en1: '',
+					account2: '',//用户注册
+					phoneNum2: '',
+					codeNum2: '',
+					passWord_phone2: '',
+					passWord_phone_en2: '',
+					isShowTip: false,
+					tipText: '',
+					acode: '',
+					wxCode: '',
+					toWxAuthPage: '',
+					showBox: 'userFrame',
+					isWeixin: false,
+					mail: '',//邮箱登录
+					mailPssw: '',
+					account3: '',//邮箱注册
+					mail3: '',
+					codeNum3: '',
+					passWord_phone3: '',
+					passWord_phone_en3: '',
+					creatType: 'phone',
+					show3: true,
+					count3: '',
+					timer3: null,
+				},
+				created: function() {
+					if(DynLoading.isWeiXin()){
+						var code = DynLoading.getUrlParam("code");
+						if(code){
+							var state = DynLoading.getUrlParam("state");
+							var params = DynLoading.getWxState(state);
+							if(params && params.scope == 'snsapi_userinfo'){
+								this.toWxlogin(code, params.acode);
+							}
+						}
+						this.weixinShowBtn();
+					}
+				},
+				methods: {
+					wxAuth: function(){
+						let that = this;
+						$.ajax({
+							type: "POST",
+							url: apiUrl + '/Auth',
+							contentType: "application/json; charset=utf-8",
+							data: JSON.stringify({
+								app_id: app_id,
+								cmd: httpOperation.Op_aCode,
+							}),
+							dataType: "json",
+							async: false,
+							success: function(res) {
+								if(res.result != 0){
+									console.log("Error: " + res.msg);
+									return ;
+								}
+								var state_key = 'state_' + new Date().getTime();
+
+								DynLoading.setWxState(state_key, {scope: 'snsapi_userinfo', acode: res.data.acode});
+								DynLoading.toWxRedd(res.data.acode, state_key, 'snsapi_userinfo');
+							},
+							error: function(jqXHR) {
+								console.log("Error: " + jqXHR.status);
+							}
+						});
+					},
+				enterWxBtn: function(){
+                obj = DynLoading.hall(BaseUrl + '/site1/wlogin');
+                console.log(obj);
+                if(obj.result != 0) {
+                    var acode = obj.data.acode;
+                    var aurl = obj.data.aurl;
+                    var rurl = 'http://' + window.location.host + '/site/login.html';
+                    window.location.href = '/site/wxredd.html?rurl= ' + rurl + '&acode=' + acode + '&aurl=' + aurl;
+                }
+            },
+					maillogin: function(mail, passWord) {
+						let that = this;
+						$.ajax({
+							type: "POST",
+							url: apiUrl + '/loginMail',
+							data: {
+								'mail': mail,
+								'password': passWord,
+								'app_id': app_id
+							},
+							dataType: "json",
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true,
+							async: false,
+							success: function(data) {
+								that.isShowTip = true;
+								that.tipText = data.msg;
+								
+							},
+							error: function(jqXHR) {
+								that.isShowTip = true;
+								that.tipText = jqXHR.responseText;
+								console.log("Error: " + jqXHR.status);
+							}
+						});
+					},
+					toWxlogin(code, acode){
+						let that = this;
+						$.ajax({
+							type: "POST",
+							url: apiUrl + '/Auth',
+							contentType: "application/json; charset=utf-8",
+							data: JSON.stringify({
+								cmd: httpOperation.OP_wxLogin,
+								'app_id': app_id,
+								'code': code,
+								'wx_app_id': acode
+							}),
+							dataType: "json",
+							async: false,
+							success: function(res) {
+								if (res.result != 0) {
+									that.isShowTip = true;
+									that.tipText = res.msg || res.result+ ' 微信登陆失败';
+									return;
+								}
+								DynLoading.setWwid(res.data.token);
+								DynLoading.setToken(res.data.token);
+								
+								that.isShowTip = true;
+								that.tipText = res.msg;
+								var _return_url = DynLoading.getReturnUrl();
+								if (_return_url && _return_url.indexOf('?') > 0) {
+									window.location.replace(_return_url + '&code=' + res.data.token);
+								} else {
+									window.location.replace('/?code=' + res.data.token);
+								}
+							},
+							error: function(jqXHR) {
+								that.isShowTip = true;
+								that.tipText = jqXHR.responseText;
+								console.log("Error: " + jqXHR.status);
+							}
+						});
+					},
+					mailShowBtn:function(){
+						this.isShowTip = false;
+						this.showBox = 'mailFrame';
+						$(".userFrame").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".phoneFrame").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".weixinFrame").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".mailFrame").animate({
+							left: "50%",
+							opacity: "1"
+						});
+					},
+					weixinShowBtn: function() {
+						console.log("//======weixinShowBtn==============>>>>>>");
+						this.isShowTip = false;
+						this.showBox = 'weixinFrame';
+						console.log(this.showBox)
+						$(".userFrame").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".phoneFrame").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".weixinFrame").animate({
+							left: "50%",
+							opacity: "1"
+						});
+						$(".mailFrame").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".setPassword").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".creatUser").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+					},
+					phoneShowBtn: function() {
+						this.isShowTip = false;
+						this.showBox = 'phoneFrame';
+						console.log(this.showBox)
+						$(".userFrame").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".phoneFrame").animate({
+							left: "50%",
+							opacity: "1"
+						});
+						$(".weixinFrame").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".mailFrame").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".setPassword").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".creatUser").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+					},
+					userShowBtn: function() {
+						this.isShowTip = false;
+						this.showBox = 'userFrame';
+						console.log(this.showBox)
+						$(".userFrame").animate({
+							left: "50%",
+							opacity: "1"
+						});
+						$(".phoneFrame").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".weixinFrame").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".mailFrame").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".setPassword").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".creatUser").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+					},
+					setPasswordShowBtn: function() {
+						this.isShowTip = false;
+						console.log(this.showBox)
+						// this.showBox = 'setPassword';
+						$(".userFrame").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".phoneFrame").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".weixinFrame").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".setPassword").animate({
+							left: "50%",
+							opacity: "1"
+						});
+						$(".mailFrame").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".creatMailuser").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$('.backBtn').animate({
+							opacity: "1"
+						});
+					},
+					creatUserShowBtn: function() {
+						this.isShowTip = false;
+						// this.showBox = 'creatUser';
+						$(".userFrame").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".phoneFrame").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".setPassword").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".weixinFrame").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".creatUser").animate({
+							left: "50%",
+							opacity: "1"
+						});
+						$(".mailFrame").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".creatMailuser").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$('.backBtn').animate({
+							opacity: "1"
+						});
+					},
+					backBtn: function() {
+						this.isShowTip = false;
+						this.phoneNum1= ''
+						this.codeNum1= ''
+						this.passWord_phone1= ''
+						this.passWord_phone_en1= ''
+						this.account2= ''
+						this.phoneNum2= ''
+						this.codeNum2= ''
+						this.passWord_phone2= ''
+						this.passWord_phone_en2= ''
+						$('.backBtn').animate({
+							opacity: "0"
+						});
+						$(".setPassword").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".creatUser").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".userFrame").animate({
+							left: "50%",
+							opacity: "1"
+						});
+						$(".phoneFrame").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".weixinFrame").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".mailFrame").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+						$(".creatMailuser").animate({
+							left: "-50%",
+							opacity: "0"
+						});
+					},
+					clearLogin: function() {
+						let that = this;
+						$.ajax({
+							type: "POST",
+							url: BaseUrl + '/Auth',
+							headers: {
+								'Content-Type': 'application/json; charset=utf-8',
+								"Authorization": DynLoading.getWwid()
+							},
+							data: JSON.stringify({
+								cmd: httpOperation.OP_Logout
+							}),
+							dataType: "json",
+							async: false,
+							success: function(data) {
+								window.localStorage.clear();
+								window.location.reload();
+							},
+							error: function(jqXHR) {
+								console.log("Error: " + jqXHR.status);
+							}
+						});
+					},
+					loginWx: function(account, passWord, callback) {
+						let that = this;
+						$.ajax({
+							type: "POST",
+							url: apiUrl + '/loginPwd',
+							data: {
+								'phone': account,
+								'password': passWord,
+								't': t
+							},
+							dataType: "json",
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true,
+							async: false,
+							success: function(data) {
+								that.isShowTip = true;
+								that.tipText = data.msg;
+								console.log(data);
+								callback(data);
+							},
+							error: function(jqXHR) {
+								that.isShowTip = true;
+								that.tipText = jqXHR.responseText;
+								console.log("Error: " + jqXHR.status);
+							}
+						});
+					},
+					login_code: function(obj,callback) {
+						let that = this;
+						// phone, code, password,cmd, 
+						$.ajax({
+							type: "POST",
+							url: apiUrl + '/Auth',
+							contentType: "application/json; charset=utf-8",
+							data: JSON.stringify(obj),
+							dataType: "json",
+							async: false,
+							success: function(data) {
+								that.isShowTip = true;
+								that.tipText = data.msg;
+								callback(data);
+							},
+							error: function(jqXHR) {
+								that.isShowTip = true;
+								that.tipText = jqXHR.responseText;
+								console.log("Error: " + jqXHR.status);
+							}
+						});
+					},
+					getCode: function(phone, callback) {
+						let that = this;
+						$.ajax({
+							type: "POST",
+							url: apiUrl + '/Auth',
+							contentType: "application/json; charset=utf-8",
+							data: JSON.stringify({
+								cmd: httpOperation.OP_SendSms,
+								mobile: phone,
+								app_id: app_id
+							}),
+							dataType: "json",
+							crossDomain: true,
+							async: false,
+							success: function(data) {
+								if (data.result === 0) {
+									console.log('验证码成功');
+								}
+								callback(data);
+							},
+							error: function(jqXHR) {
+								console.log("Error: " + jqXHR.status);
+							}
+						});
+					},
+					showTip: function(text) {
+						this.isShowTip = true;
+						this.tipText = text;
+					},
+					enterBtn: function(type) {
+						this.isShowTip = false;
+						this.tipText = '';
+						let that = this;
+						if(type == 'mail'){
+							if (this.mail.length == 0) {
+								this.isShowTip = true;
+								this.tipText = '请输入电子邮箱';
+								return;
+							}
+							if (this.mailPssw == '') {
+								this.isShowTip = true;
+								this.tipText = '请输入密码';
+								return;
+							}
+							return;
+						}
+						if (this.account.length == 0) {
+							this.isShowTip = true;
+							this.tipText = '请输入账号';
+							return;
+						}
+						if (this.passWord == '') {
+							this.isShowTip = true;
+							this.tipText = '请输入密码';
+							return;
+						}
+						let obj = {
+							"cmd": httpOperation.OP_Login,
+							'username': this.account,
+							'password': this.passWord,
+							'app_id': app_id
+						}
+						this.login_code(obj, function(res) {
+							if (res.result != 0) {
+								that.isShowTip = true;
+								that.tipText = res.msg;
+								return;
+							}
+							DynLoading.setWwid(res.data.token);
+							DynLoading.setToken(res.data.token);
+
+							that.isShowTip = true;
+							that.tipText = res.msg;
+							var _return_url = DynLoading.getReturnUrl();
+							var _url;
+
+							if (_return_url && _return_url.indexOf('?') > 0) {
+								_url = _return_url + '&code=' + res.data.token;
+								window.location.replace(_url);
+							} else {
+								window.location.replace('/?code=' + res.data.token);
+							}
+						})
+					},
+					enterBtn_phone: function() {
+						this.isShowTip = false;
+						this.tipText = '';
+						
+						if (!reg.test(this.phoneNum)) {
+							this.isShowTip = true;
+							this.tipText = '请输入正确的手机格式';
+							return;
+						}
+						if (this.codeNum == '') {
+							this.isShowTip = true;
+							this.tipText = '请输入验证码';
+							return;
+						}
+						let that = this;
+						let obj={
+							"cmd": httpOperation.OP_smsLogin,
+							'mobile': this.phoneNum,
+							'code': this.codeNum,
+							'password': this.passWord_phone_en,
+							'app_id': app_id
+						}
+						this.login_code(obj, function(res) {
+							console.log(res);
+							if (res.result != 0) {
+								that.isShowTip = true;
+								that.tipText = res.msg;
+								return;
+							}
+							DynLoading.setWwid(res.data.token);
+							DynLoading.setToken(res.data.token);
+
+							that.isShowTip = true;
+							that.tipText = res.msg;
+							var _return_url = DynLoading.getReturnUrl();
+							var _url;
+
+							if (_return_url && _return_url.indexOf('?') > 0) {
+								_url = _return_url + '&code=' + res.data.token;
+								window.location.replace(_url);
+							} else {
+								window.location.replace('/?code=' + res.data.token);
+							}
+						})
+					},
+					enterBtn_phone1: function() {//修改密码
+						this.isShowTip = false;
+						this.tipText = '';
+						var that = this;
+						
+						if (!reg.test(this.phoneNum1)) {
+							this.isShowTip = true;
+							this.tipText = '请输入正确的手机格式';
+							return;
+						}
+						
+						if (this.codeNum1 == '') {
+							this.isShowTip = true;
+							this.tipText = '请输入验证码';
+							return;
+						}
+						if (this.passWord_phone1 == '') {
+							this.isShowTip = true;
+							this.tipText = '请输入密码';
+							return;
+						}
+						if (!regex.test(this.passWord_phone1)) {
+							this.isShowTip = true;
+							this.tipText = '密码格式为字母加数字组合，长度为6-18位';
+							return;
+						}
+						if (this.passWord_phone_en1 == '') {
+							this.isShowTip = true;
+							this.tipText = '请确认密码';
+							return;
+						}
+						
+						if (this.passWord_phone1 != this.passWord_phone_en1) {
+							this.isShowTip = true;
+							this.tipText = '两次密码不一致';
+							return;
+						}
+						let obj={
+							"cmd": httpOperation.OP_resetPassword,
+							'mobile': this.phoneNum1,
+							'code': this.codeNum1,
+							'password': this.passWord_phone_en1,
+							'app_id': app_id
+						}
+						this.login_code(obj, function(value) {
+							console.log(value);
+							if (value.result != 0) {
+								that.isShowTip = true;
+								that.tipText = value.msg;
+								return;
+							}else{
+								// that.account1= ''
+								that.phoneNum1= ''
+								that.codeNum1= ''
+								that.passWord_phone1= ''
+								that.passWord_phone_en1= ''
+							}
+							that.isShowTip = true;
+							that.tipText = '修改成功';
+							//window.location.replace('/?code='+value.data.code);
+							that.backBtn();
+						})
+					},
+					enterBtn_phone2: function() {//用户注册
+						this.isShowTip = false;
+						this.tipText = '';
+						let that = this;
+						if(this.creatType == 'phone'){
+							if (this.account2.length = '') {
+								this.isShowTip = true;
+								this.tipText = '请输入用户名';
+								return;
+							}
+							if (!reg.test(this.phoneNum2)) {
+								this.isShowTip = true;
+								this.tipText = '请输入正确的手机格式';
+								return;
+							}
+							if (this.codeNum2 == '') {
+								this.isShowTip = true;
+								this.tipText = '请输入验证码';
+								return;
+							}
+							if (this.passWord_phone2 == '') {
+								this.isShowTip = true;
+								this.tipText = '请输入登陆密码';
+								return;
+							}
+							
+							if (!regex.test(this.passWord_phone2)) {
+								this.isShowTip = true;
+								this.tipText = '密码格式为字母加数字组合，长度为6-18位';
+								return;
+							}
+							if (this.passWord_phone_en2 == '') {
+								this.isShowTip = true;
+								this.tipText = '请确登陆认密码';
+								return;
+							}
+							if (this.passWord_phone2 != this.passWord_phone_en2) {
+								this.isShowTip = true;
+								this.tipText = '两次密码不一致';
+								return;
+							}
+							let obj={
+								"cmd": httpOperation.OP_register,
+								'username': this.account2,
+								'mobile': this.phoneNum2,
+								'code': this.codeNum2,
+								'password': this.passWord_phone_en2,
+								'app_id': app_id
+							}
+							this.login_code(obj, function(value) {
+								console.log(value);
+								if (value.result != 0) {
+									that.isShowTip = true;
+									that.tipText = value.msg;
+									return;
+								}else{
+									that.account2= ''
+									that.phoneNum2= ''
+									that.codeNum2= ''
+									that.passWord_phone2= ''
+									that.passWord_phone_en2= ''
+									that.account3= ''
+									that.mail3= ''
+									that.codeNum3= ''
+									that.passWord_phone3= ''
+									that.passWord_phone_en3= ''
+								}
+								
+								that.isShowTip = true;
+								that.tipText = '注册成功';
+								//window.location.replace('/?code='+value.data.code);
+								that.backBtn();
+							})
+						}
+						if(this.creatType == 'mail'){
+							if (this.account3.length = '') {
+								this.isShowTip = true;
+								this.tipText = '请输入用户名';
+								return;
+							}
+							if (!emailReg.test(this.mail3)) {
+								this.isShowTip = true;
+								this.tipText = '请输入正确的邮箱格式';
+								return;
+							}
+							if (this.codeNum3 == '') {
+								this.isShowTip = true;
+								this.tipText = '请输入验证码';
+								return;
+							}
+							if (this.passWord_phone3 == '') {
+								this.isShowTip = true;
+								this.tipText = '请输入登陆密码';
+								return;
+							}
+							
+							if (!regex.test(this.passWord_phone3)) {
+								this.isShowTip = true;
+								this.tipText = '密码格式为字母加数字组合，长度为6-18位';
+								return;
+							}
+							if (this.passWord_phone_en3 == '') {
+								this.isShowTip = true;
+								this.tipText = '请确登陆认密码';
+								return;
+							}
+							if (this.passWord_phone3 != this.passWord_phone_en3) {
+								this.isShowTip = true;
+								this.tipText = '两次密码不一致';
+								return;
+							}
+							let obj={
+								"cmd": httpOperation.OP_mailRegister,
+								'username': this.account3,
+								'email': this.mail3,
+								'code': this.codeNum3,
+								'password': this.passWord_phone_en3,
+								'app_id': app_id
+							}
+							this.login_code(obj, function(value) {
+								if (value.result != 0) {
+									that.isShowTip = true;
+									that.tipText = value.msg;
+									return;
+								}else{
+									that.account2= ''
+									that.phoneNum2= ''
+									that.codeNum2= ''
+									that.passWord_phone2= ''
+									that.passWord_phone_en2= ''
+									that.account3= ''
+									that.mail3= ''
+									that.codeNum3= ''
+									that.passWord_phone3= ''
+									that.passWord_phone_en3= ''
+								}
+								
+								that.isShowTip = true;
+								that.tipText = '注册成功';
+								//window.location.replace('/?code='+value.data.code);
+								that.backBtn();
+							})
+						}
+						
+					},
+					mailCodeBtn:function(){
+						this.isShowTip = false;
+						this.tipText = '';
+						var that = this;
+						if(!this.mail3){
+							this.isShowTip = true;
+							this.tipText = '请输入电子邮箱';
+							return;
+						}
+						if(!emailReg.test(this.mail3)){
+							this.isShowTip = true;
+							this.tipText = '电子邮箱格式错误';
+							return;
+						}
+						var time_c = 60;
+						if (!that.timer3) {
+							that.count3 = time_c;
+							that.show3 = false;
+							that.timer3 = setInterval(function() {
+								if (that.count3 > 0 && that.count3 <= time_c) {
+									that.count3--;
+								} else {
+									that.show3 = true;
+									clearInterval(that.timer3);
+									that.timer3 = null;
+								}
+							}, 1000);
+						}
+						this.isShowTip = true;
+						this.tipText = '验证码已发送到电子邮箱，请注意查收';
+					},
+					codeBtn: function(type) {
+						this.isShowTip = false;
+						this.tipText = '';
+						var that = this,phone = this.phoneNum;
+						if(type == '2'){
+							phone = this.phoneNum2;
+						}else if(type == '1'){
+							phone = this.phoneNum1;
+						}
+						if (!reg.test(phone)) {
+							this.isShowTip = true;
+							this.tipText = '请输入正确的手机格式';
+							return;
+						}
+						this.getCode(phone, function(value) {
+							console.log(value);
+							if (value.result === 0) {
+								var time_c = 60;
+								if(type == '2'){//用户注册
+									if (!that.timer2) {
+										that.count2 = time_c;
+										that.show2 = false;
+										that.timer2 = setInterval(function() {
+											if (that.count2 > 0 && that.count2 <= time_c) {
+												that.count2--;
+											} else {
+												that.show2 = true;
+												clearInterval(that.timer2);
+												that.timer2 = null;
+											}
+										}, 1000);
+									}
+								}else if(type== '1'){//修改密码
+									if (!that.timer1) {
+										that.count1 = time_c;
+										that.show1= false;
+										that.timer1 = setInterval(function() {
+											if (that.count1 > 0 && that.count1 <= time_c) {
+												that.count1--;
+											} else {
+												that.show1 = true;
+												clearInterval(that.timer1);
+												that.timer1 = null;
+											}
+										}, 1000);
+									}
+								}else{//手机登陆
+									if (!that.timer) {
+										that.count = time_c;
+										that.show = false;
+										that.timer = setInterval(function() {
+											if (that.count > 0 && that.count <= time_c) {
+												that.count--;
+											} else {
+												that.show = true;
+												clearInterval(that.timer);
+												that.timer = null;
+											}
+										}, 1000);
+									}
+								}
+								
+							} else {
+								that.isShowTip = true;
+								that.tipText = value.msg;
+							}
+						})
+					}
+				}
+			})</script><script>$(document).on('click', 'img', function(e) {
+				e.preventDefault();
+			})</script></body></html>
